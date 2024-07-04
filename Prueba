@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Comparison Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #comparisonTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            table-layout: auto;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #comparisonTable th, #comparisonTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 12px;
+            word-wrap: break-word;
+        }
+        #comparisonTable th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.7/css/responsive.dataTables.min.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.7/js/dataTables.responsive.min.js"></script>
+</head>
+<body>
+    <h1>Interactive Comparison Table</h1>
+    <table id="comparisonTable" class="display responsive nowrap">
+        <thead>
+            <tr>
+                <th>Jurisdiction</th>
+                <th>Entity</th>
+                <th>Offshore Tax</th>
+                <th>Corporate Tax</th>
+                <th>Good For</th>
+                <th>Local / International</th>
+                <th>Legal Basis</th>
+                <th>Price</th>
+                <th>Government Fees</th>
+                <th>Time</th>
+                <th>Region</th>
+                <th>Ease of Doing Business Ranking</th>
+                <th>Minimum Capital Requirement</th>
+                <th>VAT / Sales Tax</th>
+                <th>Privacy</th>
+                <th>Local Directors Required</th>
+                <th>Tax Treaties</th>
+                <th>Reputation</th>
+                <th>Audited Accounts Needed</th>
+                <th>Financial Reporting Needed</th>
+                <th>CFC Rules Applied</th>
+                <th>Product Description</th>
+                <th>Image</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be populated here by JavaScript -->
+        </tbody>
+    </table>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.ajax({
+                url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnBz0gE1C_Qcb9Zgna1AnDDphV_X4ChWXvf9mAMCHRX1vnVZyMke9oKl7r_cMKvo5SrAyt2Asa9Bwc/pub?output=tsv',
+                dataType: 'text',
+                success: function(data) {
+                    console.log("Fetched data:", data); // Debugging: log the data to the console
+                    var rows = data.split('\n');
+                    var tableBody = '';
+                    for (var i = 1; i < rows.length; i++) {
+                        var cells = rows[i].split('\t');
+                        console.log('Row ' + i + ' columns: ' + cells.length + ' data: ' + rows[i]); // Log each row and its columns
+                        if (cells.length >= 23) { // Ensure correct number of columns
+                            tableBody += '<tr>';
+                            for (var j = 0; j < cells.length; j++) {
+                                if (j === 22) {
+                                    // Handle the image column
+                                    tableBody += '<td><img src="' + cells[j] + '" alt="Image" style="max-width: 100px;"/></td>';
+                                } else {
+                                    tableBody += '<td>' + cells[j] + '</td>';
+                                }
+                            }
+                            tableBody += '</tr>';
+                        } else {
+                            console.error('Row ' + i + ' has ' + cells.length + ' columns: ' + rows[i]); // Debugging: log any problematic rows
+                        }
+                    }
+                    console.log("Generated tableBody:", tableBody); // Debugging: log the table body content
+                    $('#comparisonTable tbody').html(tableBody);
+                    $('#comparisonTable').DataTable({
+                        paging: true,
+                        searching: true,
+                        ordering: true,
+                        info: true,
+                        autoWidth: false,
+                        responsive: true,
+                    });
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error("Error loading data: " + textStatus + " - " + errorThrown); // Debugging: log any errors
+                }
+            });
+        });
+    </script>
+</body>
+</html>
